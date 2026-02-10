@@ -1,0 +1,36 @@
+<div class="user-list-container">
+  <h2>User Management</h2>
+
+  <!-- Loading State -->
+  <div class="loader-container">
+    <div *ngIf="loading$ | async" class="loader"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error$ | async as error" class="error">
+    {{ error }}
+  </div>
+  <button *ngIf="!(loading$ | async)" (click)="loadUsers()" class="btn btn-load">Load Users</button>
+
+  <!-- User Table -->
+  <table *ngIf="!(loading$ | async) && !(error$ | async)" class="user-table">
+    <thead>
+      <tr>
+        <th *ngFor="let field of fields">{{ field | capitalize }}</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users$ | async">
+        <td *ngFor="let field of fields">{{ user[field] }}</td>
+        <td class="actions">
+          <a [routerLink]="['/edit', user.id]" class="btn btn-edit">Edit</a>
+          <button (click)="onDelete(user)" class="btn btn-delete">Delete</button>
+        </td>
+      </tr>
+      <tr *ngIf="!(users$ | async)?.length">
+        <td class="no-users">No users found. Click "Load Users" to fetch data.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
