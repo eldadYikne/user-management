@@ -2,8 +2,6 @@
   <h2>Edit User #{{ userId }}</h2>
 
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-
-    <!-- Email -->
     <div class="form-field">
       <label for="email">Email</label>
       <input id="email" type="email" formControlName="email" />
@@ -13,7 +11,6 @@
       </div>
     </div>
 
-    <!-- Username -->
     <div class="form-field">
       <label for="username">Username</label>
       <input id="username" type="text" formControlName="username" />
@@ -21,12 +18,13 @@
         <span *ngIf="username.errors?.['required']">Username is required</span>
         <span *ngIf="username.errors?.['minlength']">Username must be at least 3 characters</span>
         <span *ngIf="username.errors?.['maxlength']">Username must be at most 20 characters</span>
-        <span *ngIf="username.errors?.['pattern']">Username can only contain Latin letters, numbers, and underscore</span>
+        <span *ngIf="username.errors?.['pattern']"
+          >Username can only contain Latin letters, numbers, and underscore</span
+        >
         <span *ngIf="username.errors?.['notAdmin']">Username cannot be "admin"</span>
       </div>
     </div>
 
-    <!-- Age -->
     <div class="form-field">
       <label for="age">Age</label>
       <input id="age" type="number" formControlName="age" />
@@ -36,13 +34,8 @@
       </div>
     </div>
 
-    <!-- Buttons -->
     <div class="form-actions">
-      <button
-        type="submit"
-        class="btn btn-save"
-        [disabled]="userForm.invalid || userForm.pristine"
-      >
+      <button type="submit" class="btn btn-save" [disabled]="userForm.invalid || userForm.pristine">
         Save
       </button>
       <a routerLink="/" class="btn btn-cancel">Cancel</a>

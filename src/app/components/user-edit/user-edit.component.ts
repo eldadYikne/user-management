@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { CustomValidators } from '../../validators/custom-validators';
 import { selectUserById } from '../../store/selectors/user.selectors';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-user-edit',
@@ -24,31 +25,37 @@ export class UserEditComponent implements OnInit {
     this.userId = Number(this.route.snapshot.paramMap.get('id'));
 
     this.userForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
-      username: new FormControl('', [
-        Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(20),
-        Validators.pattern(/^[a-zA-Z0-9_]+$/),
-        CustomValidators.notAdmin,
-      ]),
-      age: new FormControl<number | null>(null, [
-        Validators.required,
-        CustomValidators.ageRange(18, 100),
-      ]),
+      email: new FormControl<string>('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.email],
+      }),
+      username: new FormControl<string>('', {
+        nonNullable: true,
+        validators: [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(20),
+          Validators.pattern(/^[a-zA-Z0-9_]+$/),
+          CustomValidators.notAdmin,
+        ],
+      }),
+      age: new FormControl<number>(18, {
+        nonNullable: true,
+        validators: [Validators.required, CustomValidators.ageRange(18, 100)],
+      }),
     });
-
-    // Load user data from the store and populate the form
-    this.store.select(selectUserById(this.userId)).subscribe((user) => {
-      if (user) {
-        this.userForm.patchValue({
-          email: user.email,
-          username: user.username,
-          age: user.age,
-        });
-        this.userForm.markAsPristine();
-      }
-    });
+    this.store
+      .select(selectUserById(this.userId))
+      .pipe(take(1))
+      .subscribe((user) => {
+        if (user) {
+          this.userForm.patchValue(user);
+          this.userForm.markAsPristine();
+        } else {
+          console.warn(`User with ID ${this.userId} not found. Redirecting to user list.`);
+          this.router.navigate(['/']);
+        }
+      });
   }
 
   get email() {
